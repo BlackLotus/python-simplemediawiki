@@ -99,10 +99,11 @@ class MediaWiki(object):
     _psuedo_namespaces = None
 
     def __init__(self, api_url, cookie_file=None, cookiejar=None,
-                 user_agent=DEFAULT_UA, http_user=None, http_password=None):
+                 user_agent=DEFAULT_UA, http_user=None, http_password=None, domain=None):
         self._api_url = api_url
         self._http_user = http_user
         self._http_password = http_password
+        self.domain = domain
         if cookiejar:
             self._cj = cookiejar
         elif cookie_file:
@@ -226,7 +227,7 @@ class MediaWiki(object):
         :param passwd: password
         :returns: ``True`` on successful login, otherwise ``False``
         """
-        def do_login(self, user, passwd, token=None):
+        def do_login(self, user, passwd, token=None, domain=None):
             """
             Login function that handles CSRF protection (see `MediaWiki bug
             23076`_). Returns ``True`` on successful login.
@@ -239,6 +240,9 @@ class MediaWiki(object):
                     'lgpassword': passwd}
             if token:
                 data['lgtoken'] = token
+            if domain:
+                data['lgdomain'] = domain
+
             result = self.call(data)
             if result['login']['result'] == 'Success':
                 self._high_limits = None
