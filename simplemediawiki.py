@@ -227,7 +227,7 @@ class MediaWiki(object):
         :param passwd: password
         :returns: ``True`` on successful login, otherwise ``False``
         """
-        def do_login(self, user, passwd, token=None, domain=None):
+        def do_login(self, user, passwd, token=None):
             """
             Login function that handles CSRF protection (see `MediaWiki bug
             23076`_). Returns ``True`` on successful login.
@@ -240,8 +240,8 @@ class MediaWiki(object):
                     'lgpassword': passwd}
             if token:
                 data['lgtoken'] = token
-            if domain:
-                data['lgdomain'] = domain
+            if self.domain:
+                data['lgdomain'] = self.domain
 
             result = self.call(data)
             if result['login']['result'] == 'Success':
@@ -250,6 +250,7 @@ class MediaWiki(object):
             elif result['login']['result'] == 'NeedToken' and not token:
                 return do_login(self, user, passwd, result['login']['token'])
             else:
+                print("Login Failed: %s" % result['login']['result'])
                 return False
 
         return do_login(self, user, passwd)
